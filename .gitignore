@@ -1,6 +1,7 @@
 HELP.md
 mvnw
 mvnw.cmd
+/amplicode.xml
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
