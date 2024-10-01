@@ -24,7 +24,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: postgres:17.0
+    image: postgres:16.0
     restart: "no"
     ports:
       - "5432:5432"
@@ -40,5 +40,19 @@ services:
       timeout: 5s
       start_period: 10s
       retries: 5
+  liquibase-migrations:
+    image: liquibase/liquibase:4.25
+    depends_on:
+      - postgres
+    command:
+      - --changelog-file=master.xml
+      - --driver=org.postgresql.Driver
+      - --url=jdbc:postgresql://postgres:5432/eats
+      - --username=postgres
+      - --password=postgres
+      - update
+    volumes:
+      - ./migrations:/liquibase/changelog
+
 volumes:
   postgres_data:
