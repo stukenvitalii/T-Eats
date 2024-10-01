@@ -1,0 +1,19 @@
+app:
+  order-service-url: https://localhost:8080
+  restaurant-service-url: https://localhost:8082
+
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/eats
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
