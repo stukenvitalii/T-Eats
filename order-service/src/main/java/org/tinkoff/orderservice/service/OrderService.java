@@ -1,31 +1,27 @@
 package org.tinkoff.orderservice.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.amplicode.rautils.patch.ObjectPatcher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.tinkoff.orderservice.dto.mapper.OrderMapper;
 import org.tinkoff.orderservice.dto.OrderDto;
+import org.tinkoff.orderservice.dto.mapper.OrderMapper;
 import org.tinkoff.orderservice.entity.Order;
 import org.tinkoff.orderservice.repository.OrderRepository;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class OrderService{
+public class OrderService {
 
     private final OrderMapper orderMapper;
 
     private final OrderRepository orderRepository;
-
-    private final ObjectMapper objectMapper;
 
     private final ObjectPatcher objectPatcher;
 
@@ -55,30 +51,31 @@ public class OrderService{
         return orderMapper.toDto(resultOrder);
     }
 
-    public OrderDto patch(Integer id, JsonNode patchNode) throws IOException {
+    public OrderDto patch(Integer id, JsonNode patchNode) {
         Order order = orderRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
 
         OrderDto orderDto = orderMapper.toDto(order);
-        objectMapper.readerForUpdating(orderDto).readValue(patchNode);
+        orderDto = objectPatcher.patch(orderDto, patchNode);
         orderMapper.updateWithNull(orderDto, order);
 
         Order resultOrder = orderRepository.save(order);
         return orderMapper.toDto(resultOrder);
     }
 
-    public List<Integer> patchMany(List<Integer> ids, JsonNode patchNode) throws IOException {
+    public List<Integer> patchMany(List<Integer> ids, JsonNode patchNode) {
         Collection<Order> orders = orderRepository.findAllById(ids);
 
         for (Order order : orders) {
             OrderDto orderDto = orderMapper.toDto(order);
-            objectMapper.readerForUpdating(orderDto).readValue(patchNode);
+            orderDto = objectPatcher.patch(orderDto, patchNode);
             orderMapper.updateWithNull(orderDto, order);
         }
 
         List<Order> resultOrders = orderRepository.saveAll(orders);
-
-        return resultOrders.stream().map(Order::getId).toList();
+        return resultOrders.stream()
+                .map(Order::getId)
+                .toList();
     }
 
     public OrderDto delete(Integer id) {
