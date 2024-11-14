@@ -1,55 +1,60 @@
 package org.tinkoff.userservice.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.tinkoff.userservice.dto.UserDto;
-import org.tinkoff.userservice.entity.User;
 import org.tinkoff.userservice.service.UserService;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/rest/users")
 @RequiredArgsConstructor
-@RequestMapping("/secured/users")
+@Validated
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> findAll() {
-        List<User> users = userService.findAll();
-        List<UserDto> userDtos = users.stream()
-                .map(user -> new UserDto(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getFirstName(), user.getLastName()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDtos);
-    }
-
-    @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
-        userService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping
+    public List<UserDto> getList() {
+        return userService.getList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findById(@PathVariable Integer id) {
-        Optional<User> userOptional = userService.findById(id);
-        return userOptional.map(user -> ResponseEntity.ok(new UserDto(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getFirstName(), user.getLastName())))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public UserDto getOne(@PathVariable Integer id) {
+        return userService.getOne(id);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<UserDto> save(@RequestBody UserDto userDto) {
-        User user = new User();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        User savedUser = userService.save(user);
-        UserDto savedUserDto = new UserDto(savedUser.getId(), savedUser.getUsername(), savedUser.getPassword(), savedUser.getEmail(), savedUser.getFirstName(), savedUser.getLastName());
-        return ResponseEntity.ok(savedUserDto);
+    @GetMapping("/by-ids")
+    public List<UserDto> getMany(@RequestParam List<Integer> ids) {
+        return userService.getMany(ids);
+    }
+
+    @PostMapping
+    public UserDto create(@RequestBody UserDto dto) {
+        return userService.create(dto);
+    }
+
+    @PatchMapping("/{id}")
+    public UserDto patch(@PathVariable Integer id, @RequestBody JsonNode patchNode) throws IOException {
+        return userService.patch(id, patchNode);
+    }
+
+    @PatchMapping
+    public List<Integer> patchMany(@RequestParam List<Integer> ids, @RequestBody JsonNode patchNode) throws IOException {
+        return userService.patchMany(ids, patchNode);
+    }
+
+    @DeleteMapping("/{id}")
+    public UserDto delete(@PathVariable Integer id) {
+        return userService.delete(id);
+    }
+
+    @DeleteMapping
+    public void deleteMany(@RequestParam List<Integer> ids) {
+        userService.deleteMany(ids);
     }
 }
