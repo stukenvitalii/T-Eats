@@ -20,7 +20,7 @@ public class Dish {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
+    @Column(name = "description")
     private String description;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
