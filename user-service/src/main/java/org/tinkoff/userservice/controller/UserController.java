@@ -33,7 +33,7 @@ public class UserController {
         return userService.getMany(ids);
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public UserDto create(@RequestBody UserDto dto) {
         return userService.create(dto);
     }
