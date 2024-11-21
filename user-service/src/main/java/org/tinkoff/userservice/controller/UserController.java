@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getOne(@PathVariable Integer id) {
+    public UserDto getOne(@PathVariable("id") Integer id) {
         return userService.getOne(id);
     }
 
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto patch(@PathVariable Integer id, @RequestBody JsonNode patchNode) throws IOException {
+    public UserDto patch(@PathVariable("id") Integer id, @RequestBody JsonNode patchNode) throws IOException {
         return userService.patch(id, patchNode);
     }
 
@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public UserDto delete(@PathVariable Integer id) {
+    public UserDto delete(@PathVariable("id") Integer id) {
         return userService.delete(id);
     }
 
