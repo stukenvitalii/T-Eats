@@ -19,42 +19,42 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> getList() {
+    public List<UserDto> getUsers() {
         return userService.getList();
     }
 
     @GetMapping("/{id}")
-    public UserDto getOne(@PathVariable("id") Integer id) {
+    public UserDto getUserById(@PathVariable("id") Integer id) {
         return userService.getOne(id);
     }
 
     @GetMapping("/by-ids")
-    public List<UserDto> getMany(@RequestParam List<Integer> ids) {
+    public List<UserDto> getUsersByIds(@RequestParam List<Integer> ids) {
         return userService.getMany(ids);
     }
 
     @PostMapping("/add")
-    public UserDto create(@RequestBody UserDto dto) {
+    public UserDto createUser(@RequestBody UserDto dto) {
         return userService.create(dto);
     }
 
     @PatchMapping("/{id}")
-    public UserDto patch(@PathVariable("id") Integer id, @RequestBody JsonNode patchNode) throws IOException {
+    public UserDto patchUser(@PathVariable("id") Integer id, @RequestBody JsonNode patchNode) throws IOException {
         return userService.patch(id, patchNode);
     }
 
     @PatchMapping
-    public List<Integer> patchMany(@RequestParam List<Integer> ids, @RequestBody JsonNode patchNode) throws IOException {
+    public List<Integer> patchUsers(@RequestParam List<Integer> ids, @RequestBody JsonNode patchNode) throws IOException {
         return userService.patchMany(ids, patchNode);
     }
 
     @DeleteMapping("/{id}")
-    public UserDto delete(@PathVariable("id") Integer id) {
+    public UserDto deleteUser(@PathVariable("id") Integer id) {
         return userService.delete(id);
     }
 
     @DeleteMapping
-    public void deleteMany(@RequestParam List<Integer> ids) {
+    public void deleteUsers(@RequestParam List<Integer> ids) {
         userService.deleteMany(ids);
     }
 }
