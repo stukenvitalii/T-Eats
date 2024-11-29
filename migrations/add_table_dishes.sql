@@ -1,4 +1,4 @@
-CREATE TABLE dish
+CREATE TABLE dishes
 (
     id            SERIAL PRIMARY KEY,                       -- Unique identifier for each dish
     name          VARCHAR(100)   NOT NULL,                  -- Name of the dish
@@ -9,3 +9,9 @@ CREATE TABLE dish
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Timestamp for last update (set manually)
     FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) -- Foreign key constraint
 );
+
+INSERT INTO dishes (name, description, price, restaurant_id)
+VALUES ('Dish 1',
+        'Description 1',
+        10.00,
+        1);

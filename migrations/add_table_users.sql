@@ -1,4 +1,4 @@
-CREATE TABLE "user"
+CREATE TABLE users
 (
     id         SERIAL PRIMARY KEY,           -- Unique identifier for each user
     username   VARCHAR(50)  NOT NULL UNIQUE, -- Unique username for the user
@@ -7,3 +7,10 @@ CREATE TABLE "user"
     first_name VARCHAR(50),                  -- User's first name
     last_name  VARCHAR(50)                   -- User's last name
 );
+
+INSERT INTO users (username, password, email, first_name, last_name)
+VALUES ('admin',
+        'admin',
+        'admin@admin.com',
+        'Admin',
+        'Admin');
