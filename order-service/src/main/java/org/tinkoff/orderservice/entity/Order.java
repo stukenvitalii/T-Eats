@@ -1,10 +1,10 @@
 package org.tinkoff.orderservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
@@ -15,21 +15,27 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "order_date")
-    private Instant orderDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Moscow")
+    private Instant orderDate = Instant.now();
 
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalAmount;
+    private int totalAmount;
 
     @Column(name = "status", nullable = false, length = 20)
-    private String status;
+    private String status = "Pending"; // Статус по умолчанию
 
-    @Column(name = "created_at")
-    private Instant createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt = Instant.now(); // Автоматическая установка времени создания
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private Instant updatedAt = Instant.now();
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId; // Храним только ID пользователя
+
+    @Column(name = "restaurant_id", nullable = false)
+    private Long restaurantId; // Храним только ID ресторана
 
 }
