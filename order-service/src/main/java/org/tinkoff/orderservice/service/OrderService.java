@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.tinkoff.orderservice.dto.OrderDto;
+import org.tinkoff.orderservice.dto.CreateOrderRequest;
+import org.tinkoff.orderservice.dto.CreateOrderResponse;
 import org.tinkoff.orderservice.dto.mapper.OrderMapper;
 import org.tinkoff.orderservice.entity.Order;
 import org.tinkoff.orderservice.repository.OrderRepository;
@@ -25,51 +26,57 @@ public class OrderService {
 
     private final ObjectPatcher objectPatcher;
 
-    public List<OrderDto> getList() {
+    public List<CreateOrderResponse> getList() {
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
-                .map(orderMapper::toDto)
+                .map(orderMapper::toResponseDto)
                 .toList();
     }
 
-    public OrderDto getOne(Integer id) {
+    public CreateOrderResponse getOne(Long id) {
         Optional<Order> orderOptional = orderRepository.findById(id);
-        return orderMapper.toDto(orderOptional.orElseThrow(() ->
+        return orderMapper.toResponseDto(orderOptional.orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id))));
     }
 
-    public List<OrderDto> getMany(List<Integer> ids) {
+    public List<CreateOrderResponse> getMany(List<Long> ids) {
         List<Order> orders = orderRepository.findAllById(ids);
         return orders.stream()
-                .map(orderMapper::toDto)
+                .map(orderMapper::toResponseDto)
                 .toList();
     }
 
-    public OrderDto create(OrderDto dto) {
-        Order order = orderMapper.toEntity(dto);
+    public CreateOrderResponse create(CreateOrderRequest orderRequest) {
+        System.out.println(orderRequest.getRestaurantId());
+        Order order = orderMapper.toEntity(orderRequest);
+        order.setUserId(orderRequest.getUserId());
+        order.setRestaurantId(orderRequest.getRestaurantId());
+
+        System.out.println(order.getRestaurantId());
+
         Order resultOrder = orderRepository.save(order);
-        return orderMapper.toDto(resultOrder);
+        return orderMapper.toResponseDto(resultOrder);
     }
 
-    public OrderDto patch(Integer id, JsonNode patchNode) {
+    public CreateOrderResponse patch(Long id, JsonNode patchNode) {
         Order order = orderRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
 
-        OrderDto orderDto = orderMapper.toDto(order);
-        orderDto = objectPatcher.patch(orderDto, patchNode);
-        orderMapper.updateWithNull(orderDto, order);
+        CreateOrderRequest createOrderRequest = orderMapper.toRequestDto(order);
+        createOrderRequest = objectPatcher.patch(createOrderRequest, patchNode);
+        orderMapper.updateWithNull(createOrderRequest, order); //TODO maybe error here
 
         Order resultOrder = orderRepository.save(order);
-        return orderMapper.toDto(resultOrder);
+        return orderMapper.toResponseDto(resultOrder);
     }
 
-    public List<Integer> patchMany(List<Integer> ids, JsonNode patchNode) {
+    public List<Long> patchMany(List<Long> ids, JsonNode patchNode) {
         Collection<Order> orders = orderRepository.findAllById(ids);
 
         for (Order order : orders) {
-            OrderDto orderDto = orderMapper.toDto(order);
-            orderDto = objectPatcher.patch(orderDto, patchNode);
-            orderMapper.updateWithNull(orderDto, order);
+            CreateOrderRequest createOrderRequest = orderMapper.toRequestDto(order);
+            createOrderRequest = objectPatcher.patch(createOrderRequest, patchNode);
+            orderMapper.updateWithNull(createOrderRequest, order);
         }
 
         List<Order> resultOrders = orderRepository.saveAll(orders);
@@ -78,15 +85,15 @@ public class OrderService {
                 .toList();
     }
 
-    public OrderDto delete(Integer id) {
+    public CreateOrderResponse delete(Long id) {
         Order order = orderRepository.findById(id).orElse(null);
         if (order != null) {
             orderRepository.delete(order);
         }
-        return orderMapper.toDto(order);
+        return orderMapper.toResponseDto(order);
     }
 
-    public void deleteMany(List<Integer> ids) {
+    public void deleteMany(List<Long> ids) {
         orderRepository.deleteAllById(ids);
     }
 }
