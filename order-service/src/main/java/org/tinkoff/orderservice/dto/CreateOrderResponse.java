@@ -1,19 +1,21 @@
 package org.tinkoff.orderservice.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 
 /**
  * DTO for {@link org.tinkoff.orderservice.entity.Order}
  */
 @Value
-public class OrderDto {
-    Integer id;
+public class CreateOrderResponse {
     Instant orderDate;
-    BigDecimal totalAmount;
+    int totalAmount;
     String status;
-    Instant createdAt;
     Instant updatedAt;
+    @NotNull
+    Long userId;
+    @NotNull
+    Long restaurantId;
 }
