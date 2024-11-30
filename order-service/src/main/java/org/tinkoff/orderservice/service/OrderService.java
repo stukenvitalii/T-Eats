@@ -85,15 +85,20 @@ public class OrderService {
                 .toList();
     }
 
-    public CreateOrderResponse delete(Long id) {
+    public Long delete(Long id) {
         Order order = orderRepository.findById(id).orElse(null);
         if (order != null) {
             orderRepository.delete(order);
+            return id;
         }
-        return orderMapper.toResponseDto(order);
+        return null;
     }
 
     public void deleteMany(List<Long> ids) {
         orderRepository.deleteAllById(ids);
+    }
+
+    public List<Order> getOrdersByUserId(Long userId) {
+        return orderRepository.findByUserId(userId);
     }
 }
