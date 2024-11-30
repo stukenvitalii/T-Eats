@@ -26,9 +26,6 @@ public class Order {
     @Column(name = "status", nullable = false, length = 20)
     private String status = "Pending"; // Статус по умолчанию
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt = Instant.now(); // Автоматическая установка времени создания
-
     @Column(name = "updated_at")
     private Instant updatedAt = Instant.now();
 
