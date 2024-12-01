@@ -47,12 +47,9 @@ public class OrderService {
     }
 
     public CreateOrderResponse create(CreateOrderRequest orderRequest) {
-        System.out.println(orderRequest.getRestaurantId());
         Order order = orderMapper.toEntity(orderRequest);
         order.setUserId(orderRequest.getUserId());
         order.setRestaurantId(orderRequest.getRestaurantId());
-
-        System.out.println(order.getRestaurantId());
 
         Order resultOrder = orderRepository.save(order);
         return orderMapper.toResponseDto(resultOrder);
