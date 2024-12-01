@@ -1,6 +1,5 @@
 app:
-  user-service-url: https://localhost:8081
-  restaurant-service-url: https://localhost:8082
+  api-gateway-url: https://localhost:8080
 server:
   port: 8080
 spring:
