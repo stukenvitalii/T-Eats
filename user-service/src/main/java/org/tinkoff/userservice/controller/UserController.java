@@ -34,7 +34,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable("id") Integer id) {
+    public UserDto getUserById(@PathVariable("id") Long id) {
         return userService.getOne(id);
     }
 
@@ -44,7 +44,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Users not found")
     })
     @GetMapping("/by-ids")
-    public List<UserDto> getUsersByIds(@RequestParam List<Integer> ids) {
+    public List<UserDto> getUsersByIds(@RequestParam("ids") List<Long> ids) {
         return userService.getMany(ids);
     }
 
@@ -65,7 +65,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PatchMapping("/{id}")
-    public UserDto patchUser(@PathVariable("id") Integer id, @RequestBody JsonNode patchNode) throws IOException {
+    public UserDto patchUser(@PathVariable("id") Long id, @RequestBody JsonNode patchNode) throws IOException {
         return userService.patch(id, patchNode);
     }
 
@@ -76,7 +76,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Users not found")
     })
     @PatchMapping
-    public List<Integer> patchUsers(@RequestParam List<Integer> ids, @RequestBody JsonNode patchNode) throws IOException {
+    public List<Long> patchUsers(@RequestParam List<Long> ids, @RequestBody JsonNode patchNode) throws IOException {
         return userService.patchMany(ids, patchNode);
     }
 
@@ -86,7 +86,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @DeleteMapping("/{id}")
-    public UserDto deleteUser(@PathVariable("id") Integer id) {
+    public UserDto deleteUser(@PathVariable("id") Long id) {
         return userService.delete(id);
     }
 
@@ -96,7 +96,27 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Users not found")
     })
     @DeleteMapping
-    public void deleteUsers(@RequestParam List<Integer> ids) {
+    public void deleteUsers(@RequestParam List<Long> ids) {
         userService.deleteMany(ids);
+    }
+
+    @Operation(summary = "Check if username exists")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Username exists"),
+            @ApiResponse(responseCode = "404", description = "Username not found")
+    })
+    @GetMapping("/check-username")
+    public boolean checkUsername(@RequestParam String username) {
+        return userService.existsByUsername(username);
+    }
+
+    @Operation(summary = "Get a user by username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the user"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @GetMapping("/by-username/{username}")
+    public UserDto getUserByUsername(@PathVariable("username") String username) {
+        return userService.getUserByUsername(username);
     }
 }
