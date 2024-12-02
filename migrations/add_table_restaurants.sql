@@ -6,9 +6,3 @@ CREATE TABLE restaurants
     phone_number VARCHAR(15),           -- Phone number of the restaurant
     email        VARCHAR(100)           -- Email of the restaurant
 );
-
-INSERT INTO restaurants (name, address, phone_number, email)
-VALUES ('Restaurant 1',
-        'Address 1',
-        '1234567890',
-        'restaurant@eats.com');
