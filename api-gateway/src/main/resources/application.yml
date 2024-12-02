@@ -1,5 +1,6 @@
 app:
   secret-key: ${SECRET}
+  user-service-url: http://localhost:8081
 
 spring:
   application:
@@ -22,4 +23,3 @@ spring:
           uri: http://localhost:8083
           predicates:
             - Path=/api/restaurants/**
-
