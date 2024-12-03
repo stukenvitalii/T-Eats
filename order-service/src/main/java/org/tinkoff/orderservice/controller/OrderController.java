@@ -94,8 +94,11 @@ public class OrderController {
         orderService.deleteMany(ids);
     }
 
+    @Operation(summary = "Get orders by user ID", responses = {
+            @ApiResponse(description = "List of orders", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Order.class)))
+    })
     @GetMapping("/user/{userId}")
-    public List<Order> getOrdersByUserId(@PathVariable Long userId) {
+    public List<CreateOrderResponse> getOrdersByUserId(@PathVariable Long userId) {
         return orderService.getOrdersByUserId(userId);
     }
 }
