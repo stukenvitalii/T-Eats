@@ -1,4 +1,4 @@
-package org.tinkoff.orderservice.service;
+package org.tinkoff.orderservice.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.amplicode.rautils.patch.ObjectPatcher;
@@ -11,6 +11,7 @@ import org.tinkoff.orderservice.dto.CreateOrderResponse;
 import org.tinkoff.orderservice.dto.mapper.OrderMapper;
 import org.tinkoff.orderservice.entity.Order;
 import org.tinkoff.orderservice.repository.OrderRepository;
+import org.tinkoff.orderservice.service.OrderService;
 
 import java.util.Collection;
 import java.util.List;
