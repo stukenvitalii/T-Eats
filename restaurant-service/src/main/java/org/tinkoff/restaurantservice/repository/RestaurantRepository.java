@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.tinkoff.restaurantservice.entity.Restaurant;
 
-public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> , JpaSpecificationExecutor<Restaurant> {
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long>, JpaSpecificationExecutor<Restaurant> {
 }

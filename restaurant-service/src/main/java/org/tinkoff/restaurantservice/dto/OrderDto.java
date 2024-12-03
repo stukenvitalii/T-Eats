@@ -10,10 +10,9 @@ import java.time.Instant;
  */
 @Value
 public class OrderDto {
-    Integer id;
+    Long id;
     Instant orderDate;
     BigDecimal totalAmount;
     String status;
-    Instant createdAt;
     Instant updatedAt;
 }

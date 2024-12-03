@@ -15,7 +15,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "order_date")
     private Instant orderDate;
@@ -25,9 +25,6 @@ public class Order {
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;
-
-    @Column(name = "created_at")
-    private Instant createdAt;
 
     @Column(name = "updated_at")
     private Instant updatedAt;

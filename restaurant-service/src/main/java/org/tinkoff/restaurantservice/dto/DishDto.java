@@ -10,7 +10,7 @@ import java.time.Instant;
  */
 @Value
 public class DishDto {
-    Integer id;
+    Long id;
     String name;
     String description;
     BigDecimal price;

@@ -15,7 +15,7 @@ public class Dish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -32,9 +32,6 @@ public class Dish {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
-
+    @Column(name = "restaurant_id", nullable = false)
+    private Long restaurantId;
 }

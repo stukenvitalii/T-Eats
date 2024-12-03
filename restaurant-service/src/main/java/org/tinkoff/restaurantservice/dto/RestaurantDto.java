@@ -9,7 +9,6 @@ import java.util.Set;
  */
 @Value
 public class RestaurantDto {
-    Integer id;
     String name;
     String address;
     String phoneNumber;

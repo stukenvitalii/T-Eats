@@ -17,42 +17,47 @@ public class DishController {
     private final DishService dishService;
 
     @GetMapping
-    public List<DishDto> getList() {
+    public List<DishDto> getAllDishes() {
         return dishService.getList();
     }
 
     @GetMapping("/{id}")
-    public DishDto getOne(@PathVariable Integer id) {
+    public DishDto getDishById(@PathVariable("id") Long id) {
         return dishService.getOne(id);
     }
 
     @GetMapping("/by-ids")
-    public List<DishDto> getMany(@RequestParam List<Integer> ids) {
+    public List<DishDto> getDishesByIds(@RequestParam List<Long> ids) {
         return dishService.getMany(ids);
     }
 
-    @PostMapping
-    public DishDto create(@RequestBody DishDto dto) {
+    @PostMapping("/add")
+    public DishDto createDish(@RequestBody DishDto dto) {
         return dishService.create(dto);
     }
 
     @PatchMapping("/{id}")
-    public DishDto patch(@PathVariable Integer id, @RequestBody JsonNode patchNode) throws IOException {
+    public DishDto patchDish(@PathVariable("id") Long id, @RequestBody JsonNode patchNode) throws IOException {
         return dishService.patch(id, patchNode);
     }
 
     @PatchMapping
-    public List<Integer> patchMany(@RequestParam List<Integer> ids, @RequestBody JsonNode patchNode) throws IOException {
+    public List<Long> patchManyDishes(@RequestParam List<Long> ids, @RequestBody JsonNode patchNode) throws IOException {
         return dishService.patchMany(ids, patchNode);
     }
 
     @DeleteMapping("/{id}")
-    public DishDto delete(@PathVariable Integer id) {
+    public DishDto deleteDish(@PathVariable("id") Long id) {
         return dishService.delete(id);
     }
 
     @DeleteMapping
-    public void deleteMany(@RequestParam List<Integer> ids) {
+    public void deleteManyDishes(@RequestParam List<Long> ids) {
         dishService.deleteMany(ids);
+    }
+
+    @GetMapping("/by-restaurant-id")
+    public List<DishDto> getDishesByRestaurantId(@RequestParam Long restaurantId) {
+        return dishService.getManyByRestaurantId(restaurantId);
     }
 }

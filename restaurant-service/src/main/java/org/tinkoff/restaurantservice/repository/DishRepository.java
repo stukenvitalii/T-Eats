@@ -5,6 +5,6 @@ import org.tinkoff.restaurantservice.entity.Dish;
 
 import java.util.List;
 
-public interface DishRepository extends JpaRepository<Dish, Integer> {
-    List<Dish> findAllByRestaurant_Id(Integer id);
+public interface DishRepository extends JpaRepository<Dish, Long> {
+    List<Dish> findAllByRestaurantId(Long restaurantId);
 }
