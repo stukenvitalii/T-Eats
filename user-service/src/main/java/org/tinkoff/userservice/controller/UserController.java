@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.tinkoff.userservice.dto.UserDto;
 import org.tinkoff.userservice.service.UserService;
@@ -12,6 +13,7 @@ import org.tinkoff.userservice.service.UserService;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/rest/users")
 @RequiredArgsConstructor
@@ -107,6 +109,7 @@ public class UserController {
     })
     @GetMapping("/check-username")
     public boolean checkUsername(@RequestParam String username) {
+        log.info("Checking if username is taken: {}", username);
         return userService.existsByUsername(username);
     }
 
