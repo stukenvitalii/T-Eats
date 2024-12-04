@@ -1,12 +1,14 @@
 package org.tinkoff.apigateway.client;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.tinkoff.apigateway.dto.UserDto;
 import org.tinkoff.apigateway.dto.auth.request.RegisterRequest;
 import org.tinkoff.apigateway.dto.auth.request.ResetPasswordRequest;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceClient {
@@ -14,16 +16,19 @@ public class UserServiceClient {
     private final RestClient restClient;
 
     public boolean isUsernameTaken(String username) {
-        return restClient.get()
-                .uri("/users/check-username?username=", username)
+        log.info("Checking if username is taken: {}", username);
+        return Boolean.TRUE.equals(restClient.get().uri(uriBuilder -> uriBuilder
+                                .path("/rest/users/check-username")
+                                .queryParam("username", username)
+                                .build())
                 .retrieve()
                 .toEntity(Boolean.class)
-                .getBody();
+                .getBody());
     }
 
     public void registerUser(RegisterRequest request) {
         restClient.post()
-                .uri("/users/register")
+                .uri("/rest/users/add")
                 .body(request)
                 .retrieve()
                 .toBodilessEntity();
@@ -31,7 +36,7 @@ public class UserServiceClient {
 
     public UserDto getUserByUsername(String username) {
         return restClient.get()
-                .uri("/users/{username}", username)
+                .uri("/rest/users/by-username/{username}", username)
                 .retrieve()
                 .toEntity(UserDto.class)
                 .getBody();
