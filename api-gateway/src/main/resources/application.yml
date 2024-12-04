@@ -2,24 +2,31 @@ app:
   secret-key: ${SECRET}
   user-service-url: http://localhost:8081
 
+
 spring:
   application:
+
     name: api-gateway
   cloud:
+    inetutils:
+      default-ip-address: 127.0.0.1
+      default-hostname: localhost
     gateway:
       discovery:
         locator:
           enabled: true
       routes:
         - id: user-service
-          uri: http://localhost:8081
+          uri: http://localhost:8081/rest/users
           predicates:
-            - Path=/api/users/**
+            - Path=/rest/users/**
         - id: order-service
-          uri: http://localhost:8082
+          uri: http://localhost:8082/rest/orders
           predicates:
             - Path=/api/orders/**
         - id: restaurant-service
-          uri: http://localhost:8083
+          uri: http://localhost:8083/rest/restaurants
           predicates:
             - Path=/api/restaurants/**
+  main:
+    web-application-type: reactive
