@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.tinkoff.orderservice.dto.CreateOrderRequest;
@@ -56,7 +57,7 @@ public class OrderController {
     @Operation(summary = "Create a new order", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateOrderRequest.class))), responses = {
             @ApiResponse(description = "Order created", responseCode = "201", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateOrderResponse.class)))
     })
-    public CreateOrderResponse createOrder(@RequestBody CreateOrderRequest orderRequest) {
+    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest orderRequest) {
         return orderService.create(orderRequest);
     }
 
