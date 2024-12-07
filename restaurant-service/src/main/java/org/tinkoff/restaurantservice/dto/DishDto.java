@@ -1,6 +1,6 @@
 package org.tinkoff.restaurantservice.dto;
 
-import lombok.Value;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -8,12 +8,13 @@ import java.time.Instant;
 /**
  * DTO for {@link org.tinkoff.restaurantservice.entity.Dish}
  */
-@Value
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class DishDto {
-    Long id;
     String name;
     String description;
     BigDecimal price;
-    Instant createdAt;
-    Instant updatedAt;
+    Integer quantity;
 }

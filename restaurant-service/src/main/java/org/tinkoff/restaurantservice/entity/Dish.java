@@ -26,6 +26,9 @@ public class Dish {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
     @Column(name = "created_at")
     private Instant createdAt;
 

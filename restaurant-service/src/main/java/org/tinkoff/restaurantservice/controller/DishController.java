@@ -2,8 +2,11 @@ package org.tinkoff.restaurantservice.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.tinkoff.restaurantservice.dto.CheckOrderRequestDto;
 import org.tinkoff.restaurantservice.dto.DishDto;
+import org.tinkoff.restaurantservice.entity.Dish;
 import org.tinkoff.restaurantservice.service.DishService;
 
 import java.io.IOException;
@@ -59,5 +62,10 @@ public class DishController {
     @GetMapping("/by-restaurant-id")
     public List<DishDto> getDishesByRestaurantId(@RequestParam Long restaurantId) {
         return dishService.getManyByRestaurantId(restaurantId);
+    }
+
+    @PostMapping("/check-availability")
+    public ResponseEntity<List<DishDto>> checkDishAvailability(@RequestBody CheckOrderRequestDto orderRequest) {
+        return dishService.returnListIfDishesIfAllAreAvailable(orderRequest);
     }
 }

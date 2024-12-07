@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.tinkoff.restaurantservice.dto.CheckOrderRequestDto;
 import org.tinkoff.restaurantservice.dto.DishDto;
 import org.tinkoff.restaurantservice.dto.mapper.DishMapper;
 import org.tinkoff.restaurantservice.entity.Dish;
@@ -15,6 +17,7 @@ import org.tinkoff.restaurantservice.service.DishService;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -96,4 +99,37 @@ public class DishServiceImpl implements DishService {
                 .map(dishMapper::toDto)
                 .toList();
     }
+
+    public ResponseEntity<List<DishDto>> returnListIfDishesIfAllAreAvailable(CheckOrderRequestDto orderRequest) {
+    Long restaurantId = orderRequest.getRestaurantId();
+    Map<Long, Integer> dishQuantities = orderRequest.getDishQuantities();
+
+    // Check availability of all dishes
+    for (Map.Entry<Long, Integer> entry : dishQuantities.entrySet()) {
+        Long dishId = entry.getKey();
+        Integer requiredQuantity = entry.getValue();
+
+        Dish dish = dishRepository.findByIdAndRestaurantId(dishId, restaurantId);
+        if (dish == null || dish.getQuantity() < requiredQuantity) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(List.of());
+        }
+    }
+
+    // If all dishes are available, return the list of DishDto
+    List<DishDto> availableDishes = dishQuantities.keySet().stream()
+            .map(dishId -> {
+                Dish dish = dishRepository.findByIdAndRestaurantId(dishId, restaurantId);
+                return dishMapper.toDto(dish);
+            })
+            .toList();
+
+    // Reduce the quantities after returning the list
+    dishQuantities.forEach((dishId, requiredQuantity) -> {
+        Dish dish = dishRepository.findByIdAndRestaurantId(dishId, restaurantId);
+        dish.setQuantity(dish.getQuantity() - requiredQuantity);
+        dishRepository.save(dish);
+    });
+
+    return ResponseEntity.ok(availableDishes);
+}
 }

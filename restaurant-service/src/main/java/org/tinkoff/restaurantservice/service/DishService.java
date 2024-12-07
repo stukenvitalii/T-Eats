@@ -1,6 +1,8 @@
 package org.tinkoff.restaurantservice.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.http.ResponseEntity;
+import org.tinkoff.restaurantservice.dto.CheckOrderRequestDto;
 import org.tinkoff.restaurantservice.dto.DishDto;
 
 import java.io.IOException;
@@ -24,4 +26,6 @@ public interface DishService {
     void deleteMany(List<Long> ids);
 
     List<DishDto> getManyByRestaurantId(Long restaurantId);
+
+    ResponseEntity<List<DishDto>> returnListIfDishesIfAllAreAvailable(CheckOrderRequestDto orderRequest);
 }
