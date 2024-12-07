@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
+
 /**
  * DTO for {@link org.tinkoff.orderservice.entity.Order}
  */
@@ -17,4 +19,5 @@ public class CreateOrderRequest {
     String status;
     Long userId;
     Long restaurantId;
+    Map<Long, Integer> dishes;
 }
