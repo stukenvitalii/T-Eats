@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.amplicode.rautils.patch.ObjectPatcher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.tinkoff.orderservice.client.RestaurantClient;
+import org.tinkoff.orderservice.dto.CheckOrderRequestDto;
 import org.tinkoff.orderservice.dto.CreateOrderRequest;
 import org.tinkoff.orderservice.dto.CreateOrderResponse;
+import org.tinkoff.orderservice.dto.DishDto;
 import org.tinkoff.orderservice.dto.mapper.OrderMapper;
 import org.tinkoff.orderservice.entity.Order;
 import org.tinkoff.orderservice.repository.OrderRepository;
@@ -16,6 +20,7 @@ import org.tinkoff.orderservice.service.OrderService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -26,6 +31,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     private final ObjectPatcher objectPatcher;
+
+    private final RestaurantClient restaurantClient;
 
     public List<CreateOrderResponse> getList() {
         List<Order> orders = orderRepository.findAll();
@@ -47,13 +54,29 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
-    public CreateOrderResponse create(CreateOrderRequest orderRequest) {
-        Order order = orderMapper.toEntity(orderRequest);
-        order.setUserId(orderRequest.getUserId());
-        order.setRestaurantId(orderRequest.getRestaurantId());
+    public ResponseEntity<?> create(CreateOrderRequest orderRequest) {
+        CheckOrderRequestDto checkOrderRequestDto = new CheckOrderRequestDto();
+        checkOrderRequestDto.setRestaurantId(orderRequest.getRestaurantId());
+        checkOrderRequestDto.setDishQuantities(orderRequest.getDishes());
 
-        Order resultOrder = orderRepository.save(order);
-        return orderMapper.toResponseDto(resultOrder);
+        if (restaurantClient.getFullListOfDishesIfAvailable(checkOrderRequestDto).isEmpty()) {
+            return ResponseEntity.badRequest().body("Dishes are not available");
+        } else {
+            Order order = orderMapper.toEntity(orderRequest);
+            order.setUserId(orderRequest.getUserId());
+            order.setRestaurantId(orderRequest.getRestaurantId());
+
+            Order resultOrder = orderRepository.save(order);
+            CreateOrderResponse response = orderMapper.toResponseDto(resultOrder);
+
+            // Map dish details
+            List<DishDto> dishDetails = orderRequest.getDishes().entrySet().stream()
+                    .map(entry -> new DishDto(entry.getKey(), "Dish Name Placeholder", entry.getValue()))
+                    .collect(Collectors.toList());
+            response.setDishes(dishDetails);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
     }
 
     public CreateOrderResponse patch(Long id, JsonNode patchNode) {

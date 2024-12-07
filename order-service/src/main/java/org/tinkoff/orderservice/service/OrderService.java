@@ -1,6 +1,7 @@
 package org.tinkoff.orderservice.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.http.ResponseEntity;
 import org.tinkoff.orderservice.dto.CreateOrderRequest;
 import org.tinkoff.orderservice.dto.CreateOrderResponse;
 
@@ -13,7 +14,7 @@ public interface OrderService {
 
     List<CreateOrderResponse> getMany(List<Long> ids);
 
-    CreateOrderResponse create(CreateOrderRequest orderRequest);
+    ResponseEntity<?> create(CreateOrderRequest orderRequest);
 
     CreateOrderResponse patch(Long id, JsonNode patchNode);
 
