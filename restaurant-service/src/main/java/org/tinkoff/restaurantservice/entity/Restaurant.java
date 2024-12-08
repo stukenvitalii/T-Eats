@@ -29,10 +29,10 @@ public class Restaurant {
     @Column(name = "email", length = 100)
     private String email;
 
-    @OneToMany(mappedBy = "restaurant")
-    private Set<Dish> dishes = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "restaurant")
-    private Set<Order> orders = new LinkedHashSet<>();
+//    @OneToMany(mappedBy = "restaurant")
+//    private Set<Dish> dishes = new LinkedHashSet<>();
+//
+//    @OneToMany(mappedBy = "restaurant")
+//    private Set<Order> orders = new LinkedHashSet<>();
 
 }
