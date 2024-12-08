@@ -119,6 +119,7 @@ public class DishServiceImpl implements DishService {
     List<DishDto> availableDishes = dishQuantities.keySet().stream()
             .map(dishId -> {
                 Dish dish = dishRepository.findByIdAndRestaurantId(dishId, restaurantId);
+                dish.setQuantity(dishQuantities.get(dishId));
                 return dishMapper.toDto(dish);
             })
             .toList();
