@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -104,12 +105,16 @@ public class DishServiceImpl implements DishService {
     Long restaurantId = orderRequest.getRestaurantId();
     Map<Long, Integer> dishQuantities = orderRequest.getDishQuantities();
 
+    // Fetch all dishes by restaurant ID
+    List<Dish> dishes = dishRepository.findAllByRestaurantId(restaurantId);
+    Map<Long, Dish> dishMap = dishes.stream().collect(Collectors.toMap(Dish::getId, dish -> dish));
+
     // Check availability of all dishes
     for (Map.Entry<Long, Integer> entry : dishQuantities.entrySet()) {
         Long dishId = entry.getKey();
         Integer requiredQuantity = entry.getValue();
 
-        Dish dish = dishRepository.findByIdAndRestaurantId(dishId, restaurantId);
+        Dish dish = dishMap.get(dishId);
         if (dish == null || dish.getQuantity() < requiredQuantity) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(List.of());
         }
@@ -118,15 +123,16 @@ public class DishServiceImpl implements DishService {
     // If all dishes are available, return the list of DishDto
     List<DishDto> availableDishes = dishQuantities.keySet().stream()
             .map(dishId -> {
-                Dish dish = dishRepository.findByIdAndRestaurantId(dishId, restaurantId);
-                dish.setQuantity(dishQuantities.get(dishId));
-                return dishMapper.toDto(dish);
+                Dish dish = dishMap.get(dishId);
+                DishDto dishDto = dishMapper.toDto(dish);
+                dishDto.setQuantity(dishQuantities.get(dishId));
+                return dishDto;
             })
             .toList();
 
     // Reduce the quantities after returning the list
     dishQuantities.forEach((dishId, requiredQuantity) -> {
-        Dish dish = dishRepository.findByIdAndRestaurantId(dishId, restaurantId);
+        Dish dish = dishMap.get(dishId);
         dish.setQuantity(dish.getQuantity() - requiredQuantity);
         dishRepository.save(dish);
     });
