@@ -2,9 +2,14 @@ package org.tinkoff.orderservice.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.tinkoff.orderservice.dto.CheckOrderRequestDto;
+import org.tinkoff.orderservice.dto.DishDto;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -12,11 +17,12 @@ import org.springframework.web.client.RestClient;
 public class RestaurantClient {
     private final RestClient restaurantClient;
 
-    public void getAllRestaurants() {
-        restaurantClient
+    public List<DishDto> getFullListOfDishesIfAvailable(CheckOrderRequestDto orderRequest) {
+        return restaurantClient
                 .method(HttpMethod.GET)
-                .uri("/restaurants/")
-                .retrieve()
-                .toEntity(String.class);
+                .uri("/rest/dishes/check-availability/")
+                .body(orderRequest)
+                .retrieve().toEntity(new ParameterizedTypeReference<List<DishDto>>() {})
+                .getBody();
     }
 }

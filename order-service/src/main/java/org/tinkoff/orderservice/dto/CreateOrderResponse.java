@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.List;
 
 /**
  * DTO for {@link org.tinkoff.orderservice.entity.Order}
@@ -21,4 +22,5 @@ public class CreateOrderResponse {
     Instant updatedAt;
     Long userId;
     Long restaurantId;
+    List<DishDto> dishes;
 }
