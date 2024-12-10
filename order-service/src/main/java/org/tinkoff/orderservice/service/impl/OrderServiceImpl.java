@@ -20,7 +20,6 @@ import org.tinkoff.orderservice.service.OrderService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -59,8 +58,10 @@ public class OrderServiceImpl implements OrderService {
         checkOrderRequestDto.setRestaurantId(orderRequest.getRestaurantId());
         checkOrderRequestDto.setDishQuantities(orderRequest.getDishes());
 
-        if (restaurantClient.getFullListOfDishesIfAvailable(checkOrderRequestDto).isEmpty()) {
-            return ResponseEntity.badRequest().body("Dishes are not available");
+        List<DishDto> dishesListCheckResponse = restaurantClient.getFullListOfDishesIfAvailable(checkOrderRequestDto);
+
+        if (dishesListCheckResponse.isEmpty()) {
+            return ResponseEntity.badRequest().body("Some of dishes are not available");
         } else {
             Order order = orderMapper.toEntity(orderRequest);
             order.setUserId(orderRequest.getUserId());
@@ -70,10 +71,7 @@ public class OrderServiceImpl implements OrderService {
             CreateOrderResponse response = orderMapper.toResponseDto(resultOrder);
 
             // Map dish details
-            List<DishDto> dishDetails = orderRequest.getDishes().entrySet().stream()
-                    .map(entry -> new DishDto(entry.getKey(), "Dish Name Placeholder", entry.getValue()))
-                    .collect(Collectors.toList());
-            response.setDishes(dishDetails);
+            response.setDishes(dishesListCheckResponse);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
