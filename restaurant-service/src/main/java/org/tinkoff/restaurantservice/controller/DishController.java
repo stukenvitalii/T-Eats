@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tinkoff.restaurantservice.dto.CheckOrderRequestDto;
 import org.tinkoff.restaurantservice.dto.DishDto;
-import org.tinkoff.restaurantservice.entity.Dish;
 import org.tinkoff.restaurantservice.service.DishService;
 
 import java.io.IOException;
@@ -60,7 +59,7 @@ public class DishController {
     }
 
     @GetMapping("/by-restaurant-id")
-    public List<DishDto> getDishesByRestaurantId(@RequestParam Long restaurantId) {
+    public List<DishDto> getDishesByRestaurantId(@RequestParam("restaurantId") Long restaurantId) {
         return dishService.getManyByRestaurantId(restaurantId);
     }
 
