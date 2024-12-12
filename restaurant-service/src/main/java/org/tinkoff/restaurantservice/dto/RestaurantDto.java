@@ -1,13 +1,16 @@
 package org.tinkoff.restaurantservice.dto;
 
-import lombok.Value;
+import lombok.*;
 
 import java.util.Set;
 
 /**
  * DTO for {@link org.tinkoff.restaurantservice.entity.Restaurant}
  */
-@Value
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class RestaurantDto {
     String name;
     String address;
