@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class DishDto {
+    Long id;
     String name;
     String description;
     BigDecimal price;

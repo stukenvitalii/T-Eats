@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.tinkoff.orderservice.client.RestaurantClient;
 import org.tinkoff.orderservice.dto.CheckOrderRequestDto;
@@ -13,13 +14,17 @@ import org.tinkoff.orderservice.dto.CreateOrderRequest;
 import org.tinkoff.orderservice.dto.CreateOrderResponse;
 import org.tinkoff.orderservice.dto.DishDto;
 import org.tinkoff.orderservice.dto.mapper.OrderMapper;
+import org.tinkoff.orderservice.entity.Dish;
 import org.tinkoff.orderservice.entity.Order;
+import org.tinkoff.orderservice.entity.OrderDish;
+import org.tinkoff.orderservice.repository.DishRepository;
 import org.tinkoff.orderservice.repository.OrderRepository;
 import org.tinkoff.orderservice.service.OrderService;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -32,6 +37,8 @@ public class OrderServiceImpl implements OrderService {
     private final ObjectPatcher objectPatcher;
 
     private final RestaurantClient restaurantClient;
+
+    private final DishRepository dishRepository;
 
     public List<CreateOrderResponse> getList() {
         List<Order> orders = orderRepository.findAll();
@@ -53,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Transactional
     public ResponseEntity<?> create(CreateOrderRequest orderRequest) {
         CheckOrderRequestDto checkOrderRequestDto = new CheckOrderRequestDto();
         checkOrderRequestDto.setRestaurantId(orderRequest.getRestaurantId());
@@ -66,6 +74,18 @@ public class OrderServiceImpl implements OrderService {
             Order order = orderMapper.toEntity(orderRequest);
             order.setUserId(orderRequest.getUserId());
             order.setRestaurantId(orderRequest.getRestaurantId());
+
+            // Create and associate OrderDish entities
+            List<OrderDish> orderDishes = dishesListCheckResponse.stream()
+                    .map(dishDto -> {
+                        OrderDish orderDish = new OrderDish();
+                        orderDish.setOrder(order);
+                        orderDish.setDish(fetchDishById(dishDto.getId())); // Fetch Dish entity by id
+                        orderDish.setQuantity(dishDto.getQuantity());
+                        return orderDish;
+                    })
+                    .collect(Collectors.toList());
+            order.setOrderDishes(orderDishes);
 
             Order resultOrder = orderRepository.save(order);
             CreateOrderResponse response = orderMapper.toResponseDto(resultOrder);
@@ -121,5 +141,10 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByUserId(userId).stream()
                 .map(orderMapper::toResponseDto)
                 .toList();
+    }
+
+    private Dish fetchDishById(Long dishId) {
+        return dishRepository.findById(dishId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Dish with id `%s` not found".formatted(dishId)));
     }
 }
