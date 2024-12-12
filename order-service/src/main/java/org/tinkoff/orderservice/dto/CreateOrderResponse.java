@@ -17,7 +17,6 @@ import java.util.List;
 @Setter
 public class CreateOrderResponse {
     Instant orderDate;
-    int totalAmount;
     String status;
     Instant updatedAt;
     Long userId;

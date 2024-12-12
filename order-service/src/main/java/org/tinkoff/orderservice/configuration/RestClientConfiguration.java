@@ -7,11 +7,11 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 public class RestClientConfiguration {
-    @Value("${app.api-gateway-url}")
-    private String apiGatewayUrl;
+    @Value("${app.restaurant-service-url}")
+    private String restaurantServiceUrl;
 
     @Bean
     public RestClient restClient() {
-        return RestClient.builder().baseUrl(apiGatewayUrl).build();
+        return RestClient.builder().baseUrl(restaurantServiceUrl).build();
     }
 }

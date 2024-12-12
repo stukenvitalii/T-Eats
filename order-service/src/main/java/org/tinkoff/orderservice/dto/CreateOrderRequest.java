@@ -15,8 +15,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class CreateOrderRequest {
-    int totalAmount;
-    String status;
     Long userId;
     Long restaurantId;
     Map<Long, Integer> dishes;
