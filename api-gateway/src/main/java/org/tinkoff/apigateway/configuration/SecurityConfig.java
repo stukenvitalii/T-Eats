@@ -10,14 +10,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.tinkoff.apigateway.service.jwt.JwtAuthenticationFilter;
-import org.tinkoff.apigateway.service.jwt.JwtAuthorizationFilter;
-import org.tinkoff.apigateway.service.jwt.JwtProvider;
-import org.tinkoff.apigateway.service.jwt.UserDetailsServiceImpl;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.tinkoff.apigateway.service.jwt.*;
 
 @Configuration
 @EnableWebSecurity
@@ -28,18 +27,18 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtGatewayFilter jwtGatewayFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll() // Логин, регистрация
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Для админских задач
+                        .requestMatchers(("/swagger-ui/**")).permitAll()
+                        .requestMatchers(("/v3/api-docs*/**")).permitAll()
                         .anyRequest().authenticated() // Остальные запросы требуют аутентификации
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtProvider, userDetailsService))
-                .addFilterAfter(new JwtAuthorizationFilter(jwtProvider, userDetailsService), JwtAuthenticationFilter.class);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
