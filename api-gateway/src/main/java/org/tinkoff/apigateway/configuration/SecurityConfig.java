@@ -10,13 +10,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.reactive.config.EnableWebFlux;
-import org.tinkoff.apigateway.service.jwt.*;
+import org.tinkoff.apigateway.service.jwt.JwtProvider;
+import org.tinkoff.apigateway.service.jwt.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +23,6 @@ import org.tinkoff.apigateway.service.jwt.*;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
