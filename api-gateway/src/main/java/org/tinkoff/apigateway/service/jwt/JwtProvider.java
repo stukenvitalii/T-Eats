@@ -19,16 +19,6 @@ public class JwtProvider {
     @Getter
     private final int jwtExpirationDays = 30;
 
-    public String generateToken(UserDetails userDetails, boolean rememberMe) {
-        int expirationTime = rememberMe ? jwtExpirationDays : jwtExpirationMinutes;
-        Date expiration = new Date(System.currentTimeMillis() + expirationTime * 60 * 1000);
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .expiration(expiration)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
-    }
-
     public String generateToken(String username, boolean rememberMe) {
         int expirationTime = rememberMe ? jwtExpirationDays : jwtExpirationMinutes;
         Date expiration = new Date(System.currentTimeMillis() + expirationTime * 60 * 1000);

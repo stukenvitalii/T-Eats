@@ -46,39 +46,24 @@ public class AuthService {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    public String authenticate(LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticate(LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
         boolean rememberMe = loginRequest.isRememberMe();
 
-        // Аутентификация пользователя
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
         UserDto user = userServiceClient.getUserByUsername(username);
         if (user == null) {
-            throw new RuntimeException("User not found");
+            return ResponseEntity.badRequest().body("User not found");
+        } else if (!areCredentialsValid(user, username, password)) {
+            return ResponseEntity.badRequest().body("Invalid credentials");
         }
 
-//        Token token = new Token();
-//        token.setToken(jwt);
-//        token.setExpiryDate(rememberMe ?
-//                Instant.now().plus(jwtProvider.getJwtExpirationDays(), ChronoUnit.DAYS) :
-//                Instant.now().plus(jwtProvider.getJwtExpirationMinutes(), ChronoUnit.MINUTES)
-//        );
-//        token.setUser(user);
-//        token.setActive(true);
-//
-//        tokenRepository.save(token);
+        log.info("User authenticated: {}", user.getUsername());
 
-        log.info("User authenticated: {}", userDetails.getUsername());
-
-        // Генерация JWT токена
-        return jwtProvider.generateToken(userDetails.getUsername(), rememberMe);
-    }
+        // Generate JWT token
+        String token = jwtProvider.generateToken(user.getUsername(), rememberMe);
+        return ResponseEntity.ok(new JwtResponse(token));
+}
 
     public void logout(String token) {
         token = token.replace("Bearer ", "");
@@ -103,5 +88,11 @@ public class AuthService {
         userServiceClient.resetPassword(request);
 
         return ResponseEntity.ok("Password reset successfully");
+    }
+
+    private boolean areCredentialsValid(UserDto userFromDb, String username, String password) {
+        return userFromDb != null &&
+                userFromDb.getUsername().equals(username) &&
+                passwordEncoder.matches(password, userFromDb.getPassword());
     }
 }
