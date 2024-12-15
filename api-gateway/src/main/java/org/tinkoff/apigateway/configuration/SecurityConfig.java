@@ -14,7 +14,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.tinkoff.apigateway.service.jwt.UserDetailsServiceImpl;
+import org.tinkoff.apigateway.dto.Role;
+import org.tinkoff.apigateway.service.auth.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
@@ -29,9 +30,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**").permitAll() // Логин, регистрация
+                        .requestMatchers("/org/tinkoff/apigateway/service/auth/**").permitAll() // Логин, регистрация
                         .requestMatchers(("/swagger-ui/**")).permitAll()
                         .requestMatchers(("/v3/api-docs*/**")).permitAll()
+
+                        //restaurants
+                        .requestMatchers("/rest/restaurants").permitAll()
+                        .requestMatchers("/rest/restaurants/*").permitAll()
+                        .requestMatchers("/rest/restaurants/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/rest/restaurants/add").hasRole(Role.ADMIN.name())
+
+                        //dishes
+                        .requestMatchers("/rest/dishes/add").hasRole(Role.ADMIN.name())
+
                         .anyRequest().authenticated() // Остальные запросы требуют аутентификации
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

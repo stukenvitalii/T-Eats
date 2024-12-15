@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tinkoff.apigateway.dto.auth.request.LoginRequest;
 import org.tinkoff.apigateway.dto.auth.request.RegisterRequest;
 import org.tinkoff.apigateway.dto.auth.request.ResetPasswordRequest;
-import org.tinkoff.apigateway.service.jwt.AuthService;
+import org.tinkoff.apigateway.service.auth.AuthService;
 
 @RestController
 @RequestMapping("/auth")

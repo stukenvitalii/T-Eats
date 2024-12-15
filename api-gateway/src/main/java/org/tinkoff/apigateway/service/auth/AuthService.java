@@ -1,12 +1,9 @@
-package org.tinkoff.apigateway.service.jwt;
+package org.tinkoff.apigateway.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tinkoff.apigateway.client.UserServiceClient;
@@ -15,6 +12,7 @@ import org.tinkoff.apigateway.dto.auth.request.LoginRequest;
 import org.tinkoff.apigateway.dto.auth.request.RegisterRequest;
 import org.tinkoff.apigateway.dto.auth.request.ResetPasswordRequest;
 import org.tinkoff.apigateway.dto.auth.response.JwtResponse;
+import org.tinkoff.apigateway.service.jwt.JwtProvider;
 
 @Slf4j
 @Service

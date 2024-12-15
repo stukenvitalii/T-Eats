@@ -1,4 +1,4 @@
-package org.tinkoff.apigateway.service.jwt;
+package org.tinkoff.apigateway.service.auth;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,7 @@ import org.tinkoff.apigateway.dto.auth.request.LoginRequest;
 import org.tinkoff.apigateway.dto.auth.request.RegisterRequest;
 import org.tinkoff.apigateway.dto.auth.request.ResetPasswordRequest;
 import org.tinkoff.apigateway.dto.auth.response.JwtResponse;
+import org.tinkoff.apigateway.service.jwt.JwtProvider;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
