@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.tinkoff.apigateway.service.jwt.JwtProvider;
 import org.tinkoff.apigateway.service.jwt.UserDetailsServiceImpl;
 
 @Configuration
