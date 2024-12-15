@@ -1,7 +1,10 @@
 package org.tinkoff.apigateway.service.jwt;
 
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecretKeyAlgorithm;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,8 +47,9 @@ public class JwtProvider {
     public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
-                .build().parseSignedClaims(token)
-                .getBody()
-                .getSubject();
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("sub", String.class);
     }
 }
