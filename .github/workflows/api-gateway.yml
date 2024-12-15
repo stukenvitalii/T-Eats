@@ -9,7 +9,7 @@ on:
   pull_request:
     branches:
       - master
-      - api-gateway_dev
+#      - api-gateway_dev
     paths:
       - .github/workflows/api-gateway.yml
 
