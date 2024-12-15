@@ -113,7 +113,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/stukenvitalii/fintech:latest api-gateway  # Tag for GitHub Container Registry
+          docker build -t ghcr.io/stukenvitalii/api-gateway:latest api-gateway  # Tag for GitHub Container Registry
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
@@ -123,7 +123,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Push Docker image to GitHub Container Registry
-        run: docker push ghcr.io/stukenvitalii/fintech:latest
+        run: docker push ghcr.io/stukenvitalii/api-gateway:latest
 
   coverage_report:
     permissions:
