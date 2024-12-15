@@ -1,15 +1,11 @@
 package org.tinkoff.apigateway.service.jwt;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.tinkoff.apigateway.client.UserServiceClient;
 import org.tinkoff.apigateway.dto.Role;
@@ -19,13 +15,13 @@ import org.tinkoff.apigateway.dto.auth.request.RegisterRequest;
 import org.tinkoff.apigateway.dto.auth.request.ResetPasswordRequest;
 import org.tinkoff.apigateway.dto.auth.response.JwtResponse;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
 class AuthServiceTest {
 
     @Mock
     private JwtProvider jwtProvider;
-
-    @Mock
-    private AuthenticationManager authenticationManager;
 
     @Mock
     private UserServiceClient userServiceClient;
