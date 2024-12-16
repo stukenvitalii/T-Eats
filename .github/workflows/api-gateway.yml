@@ -141,7 +141,7 @@ jobs:
 
       - name: Run Coverage
         run: |
-          mvn clean test jacoco:prepare-agent jacoco:report --no-transfer-progress
+          mvn package --no-transfer-progress
         working-directory: api-gateway
 
       - name: Upload Jacoco Coverage Report
