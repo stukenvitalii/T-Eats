@@ -141,7 +141,7 @@ jobs:
 
       - name: Run Coverage
         run: |
-          mvn clean test jacoco:aggregate --no-transfer-progress
+          mvn clean test jacoco:report-aggregate --no-transfer-progress
         working-directory: api-gateway
 
       - name: Upload Jacoco Coverage Report
