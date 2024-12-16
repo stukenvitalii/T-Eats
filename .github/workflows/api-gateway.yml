@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - master
-      - api-gateway_dev
   pull_request:
     branches:
       - master
@@ -142,5 +141,15 @@ jobs:
 
       - name: Run Coverage
         run: |
-          mvn clean test jacoco:report --no-transfer-progress
+          mvn clean test jacoco:aggregate --no-transfer-progress
         working-directory: api-gateway
+
+      - name: Upload Jacoco Coverage Report
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco-aggregate/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 75
+          min-coverage-changed-files: 30
+          title: Code Coverage
+          update-comment: true
