@@ -67,11 +67,6 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.amplicode</groupId>
-            <artifactId>react-admin-utils-starter</artifactId>
-            <version>0.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
@@ -89,6 +84,10 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -120,6 +119,7 @@
                     <excludes>
                         <exclude>org/tinkoff/orderservice/dto/**</exclude>
                         <exclude>org/tinkoff/orderservice/entity/**</exclude>
+                        <exclude>org/tinkoff/orderservice/configuration/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
