@@ -1,0 +1,9 @@
+scrape_configs:
+  - job_name: 'sample_monitoring'
+    scrape_interval: 1s
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:8080' ]
+      - targets: [ 'host.docker.internal:8081' ]
+      - targets: [ 'host.docker.internal:8082' ]
+      - targets: [ 'host.docker.internal:8083' ]
