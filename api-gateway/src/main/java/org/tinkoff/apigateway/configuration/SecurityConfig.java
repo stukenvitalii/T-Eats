@@ -42,6 +42,14 @@ public class SecurityConfig {
 
                         //dishes
                         .requestMatchers("/rest/dishes/add").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/rest/dishes/check-availability").hasRole(Role.ADMIN.name())
+
+                        //orders
+                        .requestMatchers("/rest/orders").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/rest/orders/user/*").authenticated()
+
+                        //users
+                        .requestMatchers("/rest/users/**").hasRole(Role.ADMIN.name())
 
                         .anyRequest().authenticated() // Остальные запросы требуют аутентификации
                 )

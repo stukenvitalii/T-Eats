@@ -3,7 +3,6 @@ package org.tinkoff.apigateway.service.auth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tinkoff.apigateway.client.UserServiceClient;
@@ -20,7 +19,6 @@ import org.tinkoff.apigateway.service.jwt.JwtProvider;
 public class AuthService {
 
     private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
     private final UserServiceClient userServiceClient;
     private final PasswordEncoder passwordEncoder;
 
