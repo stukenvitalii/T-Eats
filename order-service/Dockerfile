@@ -1,3 +1,8 @@
+FROM maven:latest AS builder
+WORKDIR /application
+COPY . .
+RUN --mount=type=cache,target=/root/.m2  mvn clean install -Dmaven.test.skip
+
 FROM bellsoft/liberica-openjre-alpine:21 AS layers
 WORKDIR /application
 COPY target/*.jar app.jar
