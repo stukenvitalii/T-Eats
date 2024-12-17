@@ -23,72 +23,78 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> register(RegisterRequest registerRequest) {
-        // Проверка доступности имени пользователя через UserService
+        log.info("Attempting to register user: {}", registerRequest.getUsername());
         if (userServiceClient.isUsernameTaken(registerRequest.getUsername())) {
-            log.info("Username is already taken: {}", registerRequest.getUsername());
+            log.warn("Username is already taken: {}", registerRequest.getUsername());
             return ResponseEntity.badRequest().body("Username already taken");
         }
 
         log.info("Registering new user: {}", registerRequest.getUsername());
-
-        // Хеширование пароля
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        // Создание нового пользователя в UserService
         userServiceClient.registerUser(registerRequest);
 
-        // Генерация JWT токена для нового пользователя
         String token = jwtProvider.generateToken(registerRequest.getUsername(), false);
-        log.info("New user registered: {}", registerRequest.getUsername());
+        log.info("User registered successfully: {}", registerRequest.getUsername());
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
     public ResponseEntity<?> authenticate(LoginRequest loginRequest) {
+        log.info("Attempting to authenticate user: {}", loginRequest.getUsername());
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
         boolean rememberMe = loginRequest.isRememberMe();
 
         UserDto user = userServiceClient.getUserByUsername(username);
         if (user == null) {
+            log.warn("User not found: {}", username);
             return ResponseEntity.badRequest().body("User not found");
         } else if (!areCredentialsValid(user, username, password)) {
+            log.warn("Invalid credentials for user: {}", username);
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
 
-        log.info("User authenticated: {}", user.getUsername());
-
-        // Generate JWT token
+        log.info("User authenticated successfully: {}", username);
         String token = jwtProvider.generateToken(user.getUsername(), rememberMe);
         return ResponseEntity.ok(new JwtResponse(token));
-}
+    }
 
     public void logout(String token) {
+        log.info("Attempting to logout with token: {}", token);
         token = token.replace("Bearer ", "");
         if (!jwtProvider.validateToken(token)) {
+            log.error("Invalid token during logout: {}", token);
             throw new RuntimeException("Invalid token");
         }
+        log.info("Logout successful");
     }
 
     public boolean validateToken(String token) {
+        log.info("Validating token: {}", token);
         token = token.replace("Bearer ", "");
-        // Локальная валидация токена через JwtProvider
-        return jwtProvider.validateToken(token);
+        boolean isValid = jwtProvider.validateToken(token);
+        log.info("Token validation result: {}", isValid);
+        return isValid;
     }
 
     public ResponseEntity<?> resetPassword(ResetPasswordRequest request, String token) {
+        log.info("Attempting to reset password with token: {}", token);
         token = token.replace("Bearer ", "");
         if (!jwtProvider.validateToken(token)) {
+            log.error("Invalid token during password reset: {}", token);
             return ResponseEntity.badRequest().body("Invalid token");
         }
 
-        // Сброс пароля через UserService
         userServiceClient.resetPassword(request);
-
+        log.info("Password reset successfully for user: {}", request.getUsername());
         return ResponseEntity.ok("Password reset successfully");
     }
 
     private boolean areCredentialsValid(UserDto userFromDb, String username, String password) {
-        return userFromDb != null &&
+        log.info("Validating credentials for user: {}", username);
+        boolean isValid = userFromDb != null &&
                 userFromDb.getUsername().equals(username) &&
                 passwordEncoder.matches(password, userFromDb.getPassword());
+        log.info("Credentials validation result for user {}: {}", username, isValid);
+        return isValid;
     }
 }

@@ -1,6 +1,7 @@
 package org.tinkoff.userservice.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Email
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 

@@ -28,6 +28,24 @@ spring:
             - Path=/rest/restaurants/**
           filters:
             - name: Jwt
+        - id: restaurant-service-dishes
+          uri: http://localhost:8083/rest/dishes
+          predicates:
+            - Path=/rest/dishes/**
+          filters:
+            - RewritePath=/rest/dishes/(?<segment>.*), /rest/dishes/${segment}
+            - name: Jwt
   main:
     web-application-type: reactive
 debug: on
+
+management:
+  endpoints.web.exposure.include: 'prometheus, health'
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

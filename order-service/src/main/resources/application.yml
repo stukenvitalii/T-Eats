@@ -17,3 +17,14 @@ spring:
     show-sql: true
   jackson:
     time-zone: Europe/Moscow
+
+management:
+  endpoints.web.exposure.include: 'prometheus, health'
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

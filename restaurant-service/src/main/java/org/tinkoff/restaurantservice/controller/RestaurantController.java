@@ -31,13 +31,13 @@ public class RestaurantController {
         return restaurantService.create(restaurant);
     }
 
-    @GetMapping("/patch-many")
+    @PatchMapping("/patch-many")
     public ResponseEntity<List<Long>> patchMany(@RequestParam List<Long> ids, @RequestParam JsonNode patchNodes) throws IOException {
         List<Long> longs = restaurantService.patchMany(ids, patchNodes);
         return ResponseEntity.ok(longs);
     }
 
-    @GetMapping("/patch-one/{id}")
+    @PatchMapping("/patch-one/{id}")
     public ResponseEntity<RestaurantDto> patch(@PathVariable Long id, @RequestParam JsonNode patchNodes) throws IOException {
         RestaurantDto restaurantDto = restaurantService.patch(id, patchNodes);
         return ResponseEntity.ok(restaurantDto);

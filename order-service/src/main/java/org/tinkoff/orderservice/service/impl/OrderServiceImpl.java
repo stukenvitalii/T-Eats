@@ -3,6 +3,7 @@ package org.tinkoff.orderservice.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.amplicode.rautils.patch.ObjectPatcher;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,21 +28,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private final OrderMapper orderMapper;
-
     private final OrderRepository orderRepository;
-
     private final ObjectPatcher objectPatcher;
-
     private final RestaurantClient restaurantClient;
-
     private final DishRepository dishRepository;
 
     public List<CreateOrderResponse> getList() {
+        log.info("Fetching all orders");
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
                 .map(orderMapper::toResponseDto)
@@ -49,12 +48,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public CreateOrderResponse getOne(Long id) {
+        log.info("Fetching order with id: {}", id);
         Optional<Order> orderOptional = orderRepository.findById(id);
         return orderMapper.toResponseDto(orderOptional.orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id))));
     }
 
     public List<CreateOrderResponse> getMany(List<Long> ids) {
+        log.info("Fetching orders with ids: {}", ids);
         List<Order> orders = orderRepository.findAllById(ids);
         return orders.stream()
                 .map(orderMapper::toResponseDto)
@@ -62,50 +63,50 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-public ResponseEntity<?> create(CreateOrderRequest orderRequest) {
-    CheckOrderRequestDto checkOrderRequestDto = new CheckOrderRequestDto();
-    checkOrderRequestDto.setRestaurantId(orderRequest.getRestaurantId());
-    checkOrderRequestDto.setDishQuantities(orderRequest.getDishes());
+    public ResponseEntity<?> create(CreateOrderRequest orderRequest) {
+        log.info("Creating order with request: {}", orderRequest);
+        CheckOrderRequestDto checkOrderRequestDto = new CheckOrderRequestDto();
+        checkOrderRequestDto.setRestaurantId(orderRequest.getRestaurantId());
+        checkOrderRequestDto.setDishQuantities(orderRequest.getDishes());
 
-    List<DishDto> dishesListCheckResponse = restaurantClient.getFullListOfDishesIfAvailable(checkOrderRequestDto);
+        List<DishDto> dishesListCheckResponse = restaurantClient.getFullListOfDishesIfAvailable(checkOrderRequestDto);
 
-    if (dishesListCheckResponse.isEmpty()) {
-        return ResponseEntity.badRequest().body("Some of dishes are not available");
-    } else {
-        Order order = orderMapper.toEntity(orderRequest);
-        order.setUserId(orderRequest.getUserId());
-        order.setRestaurantId(orderRequest.getRestaurantId());
+        if (dishesListCheckResponse.isEmpty()) {
+            log.warn("Some of the dishes are not available");
+            return ResponseEntity.badRequest().body("Some of dishes are not available");
+        } else {
+            Order order = orderMapper.toEntity(orderRequest);
+            order.setUserId(orderRequest.getUserId());
+            order.setRestaurantId(orderRequest.getRestaurantId());
 
-        // Create and associate OrderDish entities
-        List<OrderDish> orderDishes = dishesListCheckResponse.stream()
-                .map(dishDto -> {
-                    OrderDish orderDish = new OrderDish();
-                    orderDish.setOrder(order);
-                    orderDish.setDish(fetchDishById(dishDto.getId())); // Fetch Dish entity by id
-                    orderDish.setQuantity(dishDto.getQuantity());
+            List<OrderDish> orderDishes = dishesListCheckResponse.stream()
+                    .map(dishDto -> {
+                        OrderDish orderDish = new OrderDish();
+                        orderDish.setOrder(order);
+                        orderDish.setDish(fetchDishById(dishDto.getId()));
+                        orderDish.setQuantity(dishDto.getQuantity());
 
-                    // Set the composite key
-                    OrderDishId orderDishId = new OrderDishId();
-                    orderDishId.setOrderId(order.getId());
-                    orderDishId.setDishId(dishDto.getId());
-                    orderDish.setId(orderDishId);
+                        OrderDishId orderDishId = new OrderDishId();
+                        orderDishId.setOrderId(order.getId());
+                        orderDishId.setDishId(dishDto.getId());
+                        orderDish.setId(orderDishId);
 
-                    return orderDish;
-                })
-                .collect(Collectors.toList());
-        order.setOrderDishes(orderDishes);
+                        return orderDish;
+                    })
+                    .collect(Collectors.toList());
+            order.setOrderDishes(orderDishes);
 
-        Order resultOrder = orderRepository.save(order);
-        CreateOrderResponse response = orderMapper.toResponseDto(resultOrder);
+            Order resultOrder = orderRepository.save(order);
+            CreateOrderResponse response = orderMapper.toResponseDto(resultOrder);
+            response.setDishes(dishesListCheckResponse);
 
-        // Map dish details
-        response.setDishes(dishesListCheckResponse);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            log.info("Order created successfully with id: {}", resultOrder.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
     }
-}
 
     public CreateOrderResponse patch(Long id, JsonNode patchNode) {
+        log.info("Patching order with id: {}", id);
         Order order = orderRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
 
@@ -114,10 +115,12 @@ public ResponseEntity<?> create(CreateOrderRequest orderRequest) {
         orderMapper.updateWithNull(createOrderRequest, order);
 
         Order resultOrder = orderRepository.save(order);
+        log.info("Order patched successfully with id: {}", resultOrder.getId());
         return orderMapper.toResponseDto(resultOrder);
     }
 
     public List<Long> patchMany(List<Long> ids, JsonNode patchNode) {
+        log.info("Patching orders with ids: {}", ids);
         Collection<Order> orders = orderRepository.findAllById(ids);
 
         for (Order order : orders) {
@@ -127,25 +130,32 @@ public ResponseEntity<?> create(CreateOrderRequest orderRequest) {
         }
 
         List<Order> resultOrders = orderRepository.saveAll(orders);
+        log.info("Orders patched successfully with ids: {}", resultOrders.stream().map(Order::getId).toList());
         return resultOrders.stream()
                 .map(Order::getId)
                 .toList();
     }
 
     public Long delete(Long id) {
+        log.info("Deleting order with id: {}", id);
         Order order = orderRepository.findById(id).orElse(null);
         if (order != null) {
             orderRepository.delete(order);
+            log.info("Order deleted successfully with id: {}", id);
             return id;
         }
+        log.warn("Order with id: {} not found", id);
         return null;
     }
 
     public void deleteMany(List<Long> ids) {
+        log.info("Deleting orders with ids: {}", ids);
         orderRepository.deleteAllById(ids);
+        log.info("Orders deleted successfully with ids: {}", ids);
     }
 
     public List<CreateOrderResponse> getOrdersByUserId(Long userId) {
+        log.info("Fetching orders for user with id: {}", userId);
         return orderRepository.findByUserId(userId).stream()
                 .map(orderMapper::toResponseDto)
                 .toList();
@@ -154,32 +164,39 @@ public ResponseEntity<?> create(CreateOrderRequest orderRequest) {
     @Transactional
     @Override
     public ResponseEntity<?> setOrderStatusPreparing(Long orderId) {
+        log.info("Setting order status to preparing for order with id: {}", orderId);
         return updateOrderStatus(orderId, "preparing");
     }
 
     @Transactional
     @Override
     public ResponseEntity<?> setOrderStatusReady(Long orderId) {
+        log.info("Setting order status to ready for order with id: {}", orderId);
         return updateOrderStatus(orderId, "ready");
     }
 
     @Transactional
     @Override
     public ResponseEntity<?> setOrderStatusDelivered(Long orderId) {
+        log.info("Setting order status to delivered for order with id: {}", orderId);
         return updateOrderStatus(orderId, "delivered");
     }
 
     private ResponseEntity<?> updateOrderStatus(Long orderId, String status) {
+        log.info("Updating order status to {} for order with id: {}", status, orderId);
         Order order = orderRepository.findById(orderId).orElse(null);
         if (order == null) {
+            log.warn("Order with id: {} not found", orderId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
         }
         order.setStatus(status);
         orderRepository.save(order);
+        log.info("Order status updated to {} for order with id: {}", status, orderId);
         return ResponseEntity.ok("Order status updated to " + status);
     }
 
     private Dish fetchDishById(Long dishId) {
+        log.info("Fetching dish with id: {}", dishId);
         return dishRepository.findById(dishId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Dish with id `%s` not found".formatted(dishId)));
     }
