@@ -3,6 +3,7 @@ package org.tinkoff.apigateway.client;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.tinkoff.apigateway.dto.UserDto;
 import org.tinkoff.apigateway.dto.auth.request.RegisterRequest;
@@ -35,11 +36,15 @@ public class UserServiceClient {
     }
 
     public UserDto getUserByUsername(String username) {
-        return restClient.get()
-                .uri("/rest/users/by-username/{username}", username)
-                .retrieve()
-                .toEntity(UserDto.class)
-                .getBody();
+        try {
+            return restClient.get()
+                    .uri("/rest/users/by-username/" + username)
+                    .retrieve()
+                    .toEntity(UserDto.class)
+                    .getBody();
+        } catch (HttpClientErrorException.NotFound e) {
+            return null;
+        }
     }
 
     public void resetPassword(ResetPasswordRequest request) {
