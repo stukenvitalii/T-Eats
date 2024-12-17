@@ -2,11 +2,13 @@ package org.tinkoff.orderservice.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.tinkoff.orderservice.dto.CreateOrderRequest;
 import org.tinkoff.orderservice.dto.CreateOrderResponse;
 
 import java.util.List;
 
+@Transactional
 public interface OrderService {
     List<CreateOrderResponse> getList();
 
@@ -25,4 +27,10 @@ public interface OrderService {
     void deleteMany(List<Long> ids);
 
     List<CreateOrderResponse> getOrdersByUserId(Long userId);
+
+    ResponseEntity<?> setOrderStatusPreparing(Long orderId);
+
+    ResponseEntity<?> setOrderStatusReady(Long orderId);
+
+    ResponseEntity<?> setOrderStatusDelivered(Long orderId);
 }

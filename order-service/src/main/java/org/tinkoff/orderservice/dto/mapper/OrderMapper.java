@@ -29,8 +29,12 @@ public interface OrderMapper {
 
     default DishDto mapOrderDishToDishDto(OrderDish orderDish) {
         DishDto dishDto = new DishDto();
+        dishDto.setId(orderDish.getDish().getId());
         dishDto.setName(orderDish.getDish().getName());
         dishDto.setQuantity(orderDish.getQuantity());
+        dishDto.setName(orderDish.getDish().getName());
+        dishDto.setPrice(orderDish.getDish().getPrice());
+        dishDto.setDescription(orderDish.getDish().getDescription());
         return dishDto;
     }
 }
