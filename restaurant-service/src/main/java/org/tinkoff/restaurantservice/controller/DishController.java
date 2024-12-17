@@ -18,19 +18,9 @@ public class DishController {
 
     private final DishService dishService;
 
-    @GetMapping
-    public List<DishDto> getAllDishes() {
-        return dishService.getList();
-    }
-
     @GetMapping("/{id}")
     public DishDto getDishById(@PathVariable("id") Long id) {
         return dishService.getOne(id);
-    }
-
-    @GetMapping("/by-ids")
-    public List<DishDto> getDishesByIds(@RequestParam List<Long> ids) {
-        return dishService.getMany(ids);
     }
 
     @PostMapping("/add")
