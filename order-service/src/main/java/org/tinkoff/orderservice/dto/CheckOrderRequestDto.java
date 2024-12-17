@@ -7,15 +7,11 @@ import lombok.Setter;
 
 import java.util.Map;
 
-/**
- * DTO for {@link org.tinkoff.orderservice.entity.Order}
- */
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class CreateOrderRequest {
-    Long userId;
+@NoArgsConstructor
+@AllArgsConstructor
+public class CheckOrderRequestDto {
     Long restaurantId;
-    Map<Long, Integer> dishes;
+    Map<Long, Integer> dishQuantities; // Map of dish ID to quantity
 }

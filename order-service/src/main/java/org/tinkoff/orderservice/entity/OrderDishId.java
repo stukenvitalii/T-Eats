@@ -15,10 +15,10 @@ import java.util.Objects;
 public class OrderDishId implements Serializable {
     private static final long serialVersionUID = 4775494873755727397L;
     @Column(name = "order_id", nullable = false)
-    private Integer orderId;
+    private Long orderId;
 
     @Column(name = "dish_id", nullable = false)
-    private Integer dishId;
+    private Long dishId;
 
     @Override
     public boolean equals(Object o) {

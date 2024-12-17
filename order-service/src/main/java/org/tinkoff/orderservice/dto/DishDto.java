@@ -5,17 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Map;
+import java.math.BigDecimal;
 
 /**
- * DTO for {@link org.tinkoff.orderservice.entity.Order}
+ * DTO for dish details in an order
  */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateOrderRequest {
-    Long userId;
-    Long restaurantId;
-    Map<Long, Integer> dishes;
+public class DishDto {
+    Long id;
+    String name;
+    String description;
+    BigDecimal price;
+    Integer quantity;
 }

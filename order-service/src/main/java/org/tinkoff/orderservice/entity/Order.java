@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,5 +36,8 @@ public class Order {
 
     @Column(name = "restaurant_id", nullable = false)
     private Long restaurantId; // Храним только ID ресторана
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderDish> orderDishes = new ArrayList<>();
 
 }
