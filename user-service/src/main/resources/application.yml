@@ -1,6 +1,6 @@
 app:
-  order-service-url: https://localhost:8080
-  restaurant-service-url: https://localhost:8082
+  order-service-url: https://localhost:8082
+  restaurant-service-url: https://localhost:8083
 
 server:
   port: 8081
