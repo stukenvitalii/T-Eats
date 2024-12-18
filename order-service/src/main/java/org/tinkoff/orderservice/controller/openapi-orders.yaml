@@ -1,6 +1,6 @@
 openapi: "3.0.3"
 info:
-  title: "OpenAPI definition"
+  title: "Order service OpenAPI definition"
   description: "T-Eats API"
   version: "1.0.0"
 servers:
