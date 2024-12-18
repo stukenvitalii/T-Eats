@@ -30,7 +30,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/org/tinkoff/apigateway/service/auth/**").permitAll() // Логин, регистрация
+                        .requestMatchers("/auth/**").permitAll() // Логин, регистрация
                         .requestMatchers(("/swagger-ui/**")).permitAll()
                         .requestMatchers(("/v3/api-docs*/**")).permitAll()
 
@@ -46,6 +46,7 @@ public class SecurityConfig {
 
                         //orders
                         .requestMatchers("/rest/orders").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/rest/orders/create").authenticated()
                         .requestMatchers("/rest/orders/user/*").authenticated()
 
                         //users
