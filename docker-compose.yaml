@@ -1,28 +1,37 @@
 services:
-  #  order-service:
-  #    image: order-service:latest
-  #    build: order-service
-  #    restart: "no"
-  #    ports:
-  #      - "8080:8080"
-  #    depends_on:
-  #      - postgres
-  #  restaurant-service:
-  #    image: restaurant-service:latest
-  #    build: restaurant-service
-  #    restart: "no"
-  #    ports:
-  #      - "8081:8080"
-  #    depends_on:
-  #      - postgres
-  #  user-service:
-  #    image: user-service:latest
-  #    build: user-service
-  #    restart: "no"
-  #    ports:
-  #      - "8082:8080"
-  #    depends_on:
-  #      - postgres
+  api-gateway:
+    image: api-gateway:latest
+    build:
+      context: api-gateway
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: "no"
+    ports:
+      - "8080:8080"
+  order-service:
+    image: order-service:latest
+    build: order-service
+    restart: "no"
+    ports:
+      - "8082:8080"
+    depends_on:
+      - postgres
+  restaurant-service:
+    image: restaurant-service:latest
+    build: restaurant-service
+    restart: "no"
+    ports:
+      - "8083:8080"
+    depends_on:
+      - postgres
+  user-service:
+    image: user-service:latest
+    build: user-service
+    restart: "no"
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
   postgres:
     image: postgres:16.0
     restart: "no"
