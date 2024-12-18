@@ -39,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantClient restaurantClient;
     private final DishRepository dishRepository;
 
+    @Transactional
     public List<CreateOrderResponse> getList() {
         log.info("Fetching all orders");
         List<Order> orders = orderRepository.findAll();
@@ -47,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Transactional
     public CreateOrderResponse getOne(Long id) {
         log.info("Fetching order with id: {}", id);
         Optional<Order> orderOptional = orderRepository.findById(id);
@@ -54,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id))));
     }
 
+    @Transactional
     public List<CreateOrderResponse> getMany(List<Long> ids) {
         log.info("Fetching orders with ids: {}", ids);
         List<Order> orders = orderRepository.findAllById(ids);
@@ -105,6 +108,7 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Transactional
     public CreateOrderResponse patch(Long id, JsonNode patchNode) {
         log.info("Patching order with id: {}", id);
         Order order = orderRepository.findById(id).orElseThrow(() ->
@@ -119,6 +123,7 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponseDto(resultOrder);
     }
 
+    @Transactional
     public List<Long> patchMany(List<Long> ids, JsonNode patchNode) {
         log.info("Patching orders with ids: {}", ids);
         Collection<Order> orders = orderRepository.findAllById(ids);
@@ -136,6 +141,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Transactional
     public Long delete(Long id) {
         log.info("Deleting order with id: {}", id);
         Order order = orderRepository.findById(id).orElse(null);
@@ -148,12 +154,14 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
+    @Transactional
     public void deleteMany(List<Long> ids) {
         log.info("Deleting orders with ids: {}", ids);
         orderRepository.deleteAllById(ids);
         log.info("Orders deleted successfully with ids: {}", ids);
     }
 
+    @Transactional
     public List<CreateOrderResponse> getOrdersByUserId(Long userId) {
         log.info("Fetching orders for user with id: {}", userId);
         return orderRepository.findByUserId(userId).stream()
@@ -182,6 +190,7 @@ public class OrderServiceImpl implements OrderService {
         return updateOrderStatus(orderId, "delivered");
     }
 
+    @Transactional
     private ResponseEntity<?> updateOrderStatus(Long orderId, String status) {
         log.info("Updating order status to {} for order with id: {}", status, orderId);
         Order order = orderRepository.findById(orderId).orElse(null);
@@ -195,6 +204,7 @@ public class OrderServiceImpl implements OrderService {
         return ResponseEntity.ok("Order status updated to " + status);
     }
 
+    @Transactional
     private Dish fetchDishById(Long dishId) {
         log.info("Fetching dish with id: {}", dishId);
         return dishRepository.findById(dishId).orElseThrow(() ->

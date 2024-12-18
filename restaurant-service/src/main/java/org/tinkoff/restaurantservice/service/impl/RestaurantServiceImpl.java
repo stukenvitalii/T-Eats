@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.tinkoff.restaurantservice.dto.RestaurantDto;
 import org.tinkoff.restaurantservice.dto.mapper.RestaurantMapper;
@@ -27,6 +28,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public List<RestaurantDto> getList() {
         log.info("Fetching all restaurants");
         List<Restaurant> restaurants = restaurantRepository.findAll();
@@ -35,6 +37,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .toList();
     }
 
+    @Transactional
     public RestaurantDto getOne(Long id) {
         log.info("Fetching restaurant with id: {}", id);
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(id);
@@ -42,6 +45,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id))));
     }
 
+    @Transactional
     public List<RestaurantDto> getMany(List<Long> ids) {
         log.info("Fetching restaurants with ids: {}", ids);
         List<Restaurant> restaurants = restaurantRepository.findAllById(ids);
@@ -50,6 +54,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .toList();
     }
 
+    @Transactional
     public RestaurantDto create(RestaurantDto dto) {
         log.info("Creating restaurant with request: {}", dto);
         Restaurant restaurant = restaurantMapper.toEntity(dto);
@@ -58,6 +63,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantMapper.toDto(resultRestaurant);
     }
 
+    @Transactional
     public RestaurantDto patch(Long id, JsonNode patchNode) throws IOException {
         log.info("Patching restaurant with id: {}", id);
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() ->
@@ -72,6 +78,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantMapper.toDto(resultRestaurant);
     }
 
+    @Transactional
     public List<Long> patchMany(List<Long> ids, JsonNode patchNode) throws IOException {
         log.info("Patching restaurants with ids: {}", ids);
         Collection<Restaurant> restaurants = restaurantRepository.findAllById(ids);
@@ -87,6 +94,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         return resultRestaurants.stream().map(Restaurant::getId).toList();
     }
 
+    @Transactional
     public RestaurantDto delete(Long id) {
         log.info("Deleting restaurant with id: {}", id);
         Restaurant restaurant = restaurantRepository.findById(id).orElse(null);
@@ -99,6 +107,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantMapper.toDto(restaurant);
     }
 
+    @Transactional
     public void deleteMany(List<Long> ids) {
         log.info("Deleting restaurants with ids: {}", ids);
         restaurantRepository.deleteAllById(ids);

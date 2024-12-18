@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.tinkoff.userservice.dto.UserDto;
 import org.tinkoff.userservice.dto.mapper.UserMapper;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public List<UserDto> getList() {
         List<User> users = userRepository.findAll();
         return users.stream()
@@ -34,12 +36,14 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    @Transactional
     public UserDto getOne(Long id) {
         Optional<User> userOptional = userRepository.findById(id);
         return userMapper.toDto(userOptional.orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id))));
     }
 
+    @Transactional
     public List<UserDto> getMany(List<Long> ids) {
         List<User> users = userRepository.findAllById(ids);
         return users.stream()
@@ -47,12 +51,14 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    @Transactional
     public UserDto create(UserDto dto) {
         User user = userMapper.toEntity(dto);
         User resultUser = userRepository.save(user);
         return userMapper.toDto(resultUser);
     }
 
+    @Transactional
     public UserDto patch(Long id, JsonNode patchNode) throws IOException {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
@@ -65,6 +71,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(resultUser);
     }
 
+    @Transactional
     public List<Long> patchMany(List<Long> ids, JsonNode patchNode) throws IOException {
         Collection<User> users = userRepository.findAllById(ids);
 
@@ -80,6 +87,7 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    @Transactional
     public UserDto delete(Long id) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
@@ -88,16 +96,19 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
+    @Transactional
     public void deleteMany(List<Long> ids) {
         userRepository.deleteAllById(ids);
     }
 
+    @Transactional
     @Override
     public UserDto getUserByUsername(String username) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         return userMapper.toDto(optionalUser.orElse(null));
     }
 
+    @Transactional
     @Override
     public boolean existsByUsername(String username) {
         return userRepository.existsUserByUsername(username);

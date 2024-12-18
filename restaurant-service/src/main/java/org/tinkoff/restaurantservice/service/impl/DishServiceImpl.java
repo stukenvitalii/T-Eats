@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.tinkoff.restaurantservice.dto.CheckOrderRequestDto;
 import org.tinkoff.restaurantservice.dto.DishDto;
@@ -31,6 +32,7 @@ public class DishServiceImpl implements DishService {
     private final DishRepository dishRepository;
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public List<DishDto> getList() {
         log.info("Fetching all dishes");
         List<Dish> dishes = dishRepository.findAll();
@@ -39,6 +41,7 @@ public class DishServiceImpl implements DishService {
                 .toList();
     }
 
+    @Transactional
     public DishDto getOne(Long id) {
         log.info("Fetching dish with id: {}", id);
         Optional<Dish> dishOptional = dishRepository.findById(id);
@@ -46,6 +49,7 @@ public class DishServiceImpl implements DishService {
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id))));
     }
 
+    @Transactional
     public List<DishDto> getMany(List<Long> ids) {
         log.info("Fetching dishes with ids: {}", ids);
         List<Dish> dishes = dishRepository.findAllById(ids);
@@ -54,6 +58,7 @@ public class DishServiceImpl implements DishService {
                 .toList();
     }
 
+    @Transactional
     public DishDto create(DishDto dto) {
         log.info("Creating dish with request: {}", dto);
         Dish dish = dishMapper.toEntity(dto);
@@ -62,6 +67,7 @@ public class DishServiceImpl implements DishService {
         return dishMapper.toDto(resultDish);
     }
 
+    @Transactional
     public DishDto patch(Long id, JsonNode patchNode) throws IOException {
         log.info("Patching dish with id: {}", id);
         Dish dish = dishRepository.findById(id).orElseThrow(() ->
@@ -76,6 +82,7 @@ public class DishServiceImpl implements DishService {
         return dishMapper.toDto(resultDish);
     }
 
+    @Transactional
     public List<Long> patchMany(List<Long> ids, JsonNode patchNode) throws IOException {
         log.info("Patching dishes with ids: {}", ids);
         Collection<Dish> dishes = dishRepository.findAllById(ids);
@@ -91,6 +98,7 @@ public class DishServiceImpl implements DishService {
         return resultDishes.stream().map(Dish::getId).toList();
     }
 
+    @Transactional
     public DishDto delete(Long id) {
         log.info("Deleting dish with id: {}", id);
         Dish dish = dishRepository.findById(id).orElse(null);
@@ -103,12 +111,14 @@ public class DishServiceImpl implements DishService {
         return dishMapper.toDto(dish);
     }
 
+    @Transactional
     public void deleteMany(List<Long> ids) {
         log.info("Deleting dishes with ids: {}", ids);
         dishRepository.deleteAllById(ids);
         log.info("Dishes deleted successfully with ids: {}", ids);
     }
 
+    @Transactional
     public List<DishDto> getManyByRestaurantId(Long id) {
         log.info("Fetching dishes for restaurant with id: {}", id);
         List<Dish> dishes = dishRepository.findAllByRestaurantId(id);
@@ -117,6 +127,7 @@ public class DishServiceImpl implements DishService {
                 .toList();
     }
 
+    @Transactional
     public ResponseEntity<List<DishDto>> returnListIfDishesIfAllAreAvailable(CheckOrderRequestDto orderRequest) {
         log.info("Checking availability of dishes for order request: {}", orderRequest);
         Long restaurantId = orderRequest.getRestaurantId();
